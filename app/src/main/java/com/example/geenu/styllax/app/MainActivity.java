@@ -1,22 +1,186 @@
 package com.example.geenu.styllax.app;
 
-import android.app.Activity;
+import android.app.TaskStackBuilder;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.view.LayoutInflater;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.ActionBarActivity;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
 
-public class MainActivity extends Activity
+public class MainActivity extends ActionBarActivity {
+
+
+
+    ImageView imagePreview;
+    Button button, button1;
+    ImageView image, image1;
+
+    Bitmap bitmap;
+   int lastImageRef;
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu items for use in the action bar
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle presses on the action bar items
+        switch (item.getItemId()) {
+            case R.id.action_search:
+                openSearch();
+                return true;
+            case R.id.action_settings:
+                openSettings();
+                return true;
+            case android.R.id.home:
+                Intent upIntent = NavUtils.getParentActivityIntent(this);
+                if (NavUtils.shouldUpRecreateTask(this, upIntent)) {
+                      TaskStackBuilder.create(this).addNextIntentWithParentStack(upIntent).startActivities();
+                }
+                else {
+                      NavUtils.navigateUpTo(this, upIntent);
+                }
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        GridView gridView = (GridView) findViewById(R.id.gridview);
+        gridView.setAdapter(new ImageAdapter(this));
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
+                Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+                intent.putExtra("image", position);
+                startActivity(intent);
+            }
+        });
+    }
+
+    public void openSearch()
+    {
+
+    }
+
+    public void openSettings(){
+
+    }
+
+   /*   Button buttonSetWallpaper = (Button)findViewById(R.id.button);
+        imagePreview = (ImageView)findViewById(R.id.imageView);
+        imagePreview.setImageResource(R.drawable.image1);
+
+        buttonSetWallpaper.setOnClickListener(new Button.OnClickListener(){
+            @Override
+            public void onClick(View arg0) {
+                WallpaperManager myWallpaperManager
+                        = WallpaperManager.getInstance(getApplicationContext());
+                try {
+                    myWallpaperManager.setResource(+R.drawable.image1);
+                } catch (IOException e) {
+
+                    e.printStackTrace();
+                }
+            }});
+        image = (ImageView) findViewById(R.id.imageView);
+
+
+        /*button = (Button) findViewById(R.id.btnNext);
+        button.setOnClickListener(new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                image.setImageResource(R.drawable.image2);
+            }
+        });*/
+        /*image1 = (ImageView) findViewById(R.id.imageView1);
+
+        button1 = (Button) findViewById(R.id.btnPrevious);
+        button1.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                image.setImageResource(R.drawable.image5);
+            }
+        });*/
+
+    public static class ImageAdapter extends BaseAdapter
+    {
+        public static Integer[] wallpaperThumbIntegers = {
+                R.drawable.thumb1, R.drawable.thumb2,
+                R.drawable.thumb3, R.drawable.thumb4,
+                R.drawable.thumb5, R.drawable.thumb6,
+                R.drawable.thumb7, R.drawable.thumb8
+        };
+
+        Context context;
+
+        public ImageAdapter(Context c)
+        {
+            super();
+            context = c;
+        }
+
+        public int getCount() {
+            return wallpaperThumbIntegers.length;
+        }
+
+
+        public Object getItem(int position) {
+            return wallpaperThumbIntegers[position];
+        }
+
+        public long getItemId(int position) {
+            return position;
+        }
+
+
+        public View getView(int position, View convertView, ViewGroup parent)
+        {
+            ImageView imageView;
+            if (convertView == null) { // if it's not recycled, initialize some attributes
+                imageView = new ImageView(context);
+                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                imageView.setLayoutParams(new GridView.LayoutParams(
+                        LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT));
+            } else {
+                imageView = (ImageView) convertView;
+            }
+
+            imageView.setImageResource(wallpaperThumbIntegers[position]);
+            return imageView;
+        }
+    }
+}
+
+
+/*public class MainActivity extends Activity
 {
-
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -25,6 +189,16 @@ public class MainActivity extends Activity
 
         GridView gridView = (GridView)findViewById(R.id.gridview);
         gridView.setAdapter(new MyAdapter(this));
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener()
+        {
+            public void onItemClick(AdapterView<?> parent, View v, int position, long id)
+            {
+                Intent intent = new Intent(getApplicationContext(), DetailActivity.class);
+                intent.putExtra("image", position);
+                intent.putExtra("title", getTitle());
+                startActivity(intent);
+            }
+        });
     }
 
     private class MyAdapter extends BaseAdapter
@@ -98,128 +272,4 @@ public class MainActivity extends Activity
         }
     }
 
-}
-/*
-import android.app.Activity;
-
-
-import android.content.Context;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
-import android.widget.ImageView;
-
-
-import android.app.Activity;
-import android.content.Context;
-import android.os.Bundle;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
-import android.widget.ImageView;
-
-public class MainActivity extends Activity {
-
-    private Integer[] wallpaperThumbIntegers = {
-            R.drawable.image1, R.drawable.image2,
-            R.drawable.image3, R.drawable.image4,
-            R.drawable.image5, R.drawable.image6,
-            R.drawable.image7, R.drawable.image8
-    };
-
-    ImageView imagePreview;
-    //Button button, button1;
-    //ImageView image, image1;
-
-//    Bitmap bitmap;
-  //  int lastImageRef;
-
-    /** Called when the activity is first created.
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_main);
-
-        GridView gridView = (GridView) findViewById(R.id.gridView1);
-        gridView.setAdapter(new ImageAdapter(this));
-
-        /*Button buttonSetWallpaper = (Button)findViewById(R.id.setWallpaper);
-        imagePreview = (ImageView)findViewById(R.id.imageView1);
-        imagePreview.setImageResource(R.drawable.image1);
-
-        buttonSetWallpaper.setOnClickListener(new Button.OnClickListener(){
-            @Override
-            public void onClick(View arg0) {
-                WallpaperManager myWallpaperManager
-                        = WallpaperManager.getInstance(getApplicationContext());
-                try {
-                    myWallpaperManager.setResource(+R.drawable.image1);
-                } catch (IOException e) {
-
-                    e.printStackTrace();
-                }
-            }});*/
-      /*  image = (ImageView) findViewById(R.id.imageView1);
-
-        button = (Button) findViewById(R.id.btnNext);
-        button.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                image.setImageResource(R.drawable.image2);
-            }
-        });
-        image1 = (ImageView) findViewById(R.id.imageView1);
-
-        button1 = (Button) findViewById(R.id.btnPrevious);
-        button1.setOnClickListener(new OnClickListener() {
-
-            @Override
-            public void onClick(View arg0) {
-                image.setImageResource(R.drawable.image5);
-            }
-        });
-    }
-    public class ImageAdapter extends BaseAdapter
-    {
-        private Context context;
-
-        public ImageAdapter(Context c)
-        {
-            context = c;
-        }
-
-        //---returns the number of images---
-        public int getCount() {
-            return wallpaperThumbIntegers.length;
-        }
-
-        //---returns the ID of an item---
-        public Object getItem(int position) {
-            return position;
-        }
-
-        public long getItemId(int position) {
-            return position;
-        }
-
-        //---returns an ImageView view---
-        public View getView(int position, View convertView, ViewGroup parent)
-        {
-            ImageView imageView;
-            if (convertView == null) {
-                imageView = new ImageView(context);
-                imageView.setLayoutParams(new GridView.LayoutParams(85, 85));
-                imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                imageView.setPadding(5, 5, 5, 5);
-            } else {
-                imageView = (ImageView) convertView;
-            }
-            imageView.setImageResource(wallpaperThumbIntegers[position]);
-            return imageView;
-        }
-    }
-}
-        */
+}*/
